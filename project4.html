@@ -1,10 +1,91 @@
 <!--Load Main js program-->
+<script type="text/javascript" src="./Common/MV.js"></script>
+<script type="text/javascript" src="./Common/initShaders.js"></script>
+<script type="text/javascript" src="./Common/webgl-utils.js"></script>
 <script type="text/javascript" src="project4.js"></script>
 
-<htlm>
-    <body>
-    Hello!
-        <img src="wood_flr1.jpg" id="floorImage">
-    </body>
+<script id="vertex-shader" type="x-shader/x-vertex">
 
-</htlm>
+attribute vec4 vPosition;
+//attribute vec4 vNormal;
+//attribute vec4 vColor;
+varying vec4 fColor;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform vec4 lightPosition;
+
+varying vec3 N, L, E;
+
+uniform vec3 theta;
+
+void main() 
+{
+
+    //vec3 vertexPosition = (modelViewMatrix *vPosition).xyz;
+    //N = normalize((modelViewMatrix * vNormal).xyz);
+    //L = normalize(lightPosition.xyz - vertexPosition);
+    //E = -normalize(vertexPosition);
+    
+    gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+    //fColor = vColor;
+} 
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+uniform vec4 ambientProduct;
+uniform vec4 diffuseProduct; 
+uniform vec4 specularProduct; 
+
+uniform vec4 reflectAmbient;
+uniform vec4 reflectDiffuse;
+
+uniform float shininess; 
+
+varying vec3 N, L, E;
+   
+varying vec4 fColor;
+
+void main()
+{
+    //vec4 ambientProduct = fColor * reflectAmbient;
+    //vec4 diffuseProduct = fColor * reflectDiffuse;
+
+    //vec4 resultColor; 
+    //vec3 H = normalize( L + E );
+    
+    //vec4 ambient = ambientProduct; 
+    
+    //float Kd = max( dot(L, N), 0.0 ); 
+    //vec4  diffuse = Kd*diffuseProduct; 
+    
+    //float Ks = pow( max(dot(N, H), 0.0), shininess ); 
+    //vec4  specular = Ks * specularProduct; 
+    
+    //if( dot(L, N) < 0.0 ) specular = vec4(0.0, 0.0, 0.0, 1.0); 
+    
+    //resultColor = ambient + diffuse + specular; 
+    //resultColor.a = 1.0; 
+    
+    vec4 resultColor = vec4(1,1,1,1);
+    gl_FragColor = resultColor;  
+}
+</script>
+
+<htlm>
+    <center>
+    <h3>ITCS 6120 - Project4a</h3>
+    </center>
+<body>
+<canvas id="gl-canvas" width="800" height="600">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+   
+<br/>
+
+
+</body>
+</html>
