@@ -4,6 +4,8 @@
 <script type="text/javascript" src="./Common/webgl-utils.js"></script>
 <script type="text/javascript" src="project4.js"></script>
 
+<script type="text/javascript" src="plan.json"></script>
+
 <script id="vertex-shader" type="x-shader/x-vertex">
 
 attribute vec4 vPosition;
@@ -28,7 +30,7 @@ void main()
     //E = -normalize(vertexPosition);
     
     gl_Position = projectionMatrix * modelViewMatrix * vPosition;
-    //fColor = vColor;
+    //fColor = vPosition;
 } 
 </script>
 
@@ -70,7 +72,7 @@ void main()
     //resultColor = ambient + diffuse + specular; 
     //resultColor.a = 1.0; 
     
-    vec4 resultColor = vec4(1,1,1,1);
+    vec4 resultColor = vec4(0.2,0.2,0.2,1.0);
     gl_FragColor = resultColor;  
 }
 </script>

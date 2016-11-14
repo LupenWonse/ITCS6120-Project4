@@ -12,16 +12,16 @@ var vBuffer;
 
 // Proejction variables
 var near = 1.0;
-var far = 10.0;
-var right = 10;
-var left = -1;
-var pTop = 10;
+var far = 100.0;
+var right = 2;
+var left = -2;
+var pTop = 3;
 var pBottom = -1;
 
 // ModelView Transformation variables
-var eye = vec3(0.0, 0.0, 1.0);
-var at = vec3(0.0, 0.0, 0.0);
-var up = vec3(0.0, 1.0, 0.0);
+var eye = vec3(90.0, 550.0, 1.0);
+var at = vec3(91.0, 550.0, 1.0);
+var up = vec3(0.0, 0.0, -1.0);
 
 var mvLocation, pLocation;
 var modelView, projection;
@@ -56,7 +56,9 @@ window.onload = function init() {
     mvLocation = gl.getUniformLocation(program,"modelViewMatrix");
     pLocation = gl.getUniformLocation(program,"projectionMatrix");
 
-    polygon();
+    
+    // Load data into memory
+    generateRoomsFromData();
     console.log(points);
     render();
 };
@@ -96,28 +98,35 @@ function perspective() {
     return result;
 }
 
+// Data handling functions
+function generateRoomsFromData(){
+    for (room in data.rooms) {
+        polygon(data.rooms[room].polygon);
+    }
+}
+
+
 // Modelling functions
 
-function polygon(){
-    var vertices = [vec4(0,0,0),vec4(0,2,0),vec4(3,2,0),vec4(3,4,0),vec4(6,4,0),vec4(6,0,0)];
-    var elevatedVertices = []
-    var vertex
-    console.log(vertices);
+function polygon(vertices){
+    //var vertices = [vec4(0,0,0),vec4(0,2,0),vec4(3,2,0),vec4(3,4,0),vec4(6,4,0),vec4(6,0,0)];
+    
+    var polygonVertices = [], elevatedVertices = [];
     for (var i = 0 ; i < vertices.length; i++){
-        var vertex = vec4(vertices[i][0],vertices[i][1],3);
-        elevatedVertices.push(vertex);
+        polygonVertices.push(vec4(vertices[i][0],vertices[i][1],0));
+        elevatedVertices.push(vec4(vertices[i][0],vertices[i][1],12));
     }
+    
     console.log(elevatedVertices);
     
-    
-    for (var i = 0 ; i < 6; i++){
+    for (var i = 0 ; i < vertices.length; i++){
         if (i == vertices.length - 1) {
             next = 0
         } else {
             next = i+1;
         }
-        triangle(vertices[i],elevatedVertices[i],elevatedVertices[next]);
-        triangle(vertices[i],vertices[next],elevatedVertices[next]);
+        triangle(polygonVertices[i],elevatedVertices[i],elevatedVertices[next]);
+        triangle(polygonVertices[i],polygonVertices[next],elevatedVertices[next]);
     }   
 }
 
@@ -139,17 +148,17 @@ function triangle(a, b, c) {
 
 window.onkeypress = function () {
     if (event.key == "a") {
-        eye[0] = eye[0] - 0.1;
-        at[0] = at[0] - 0.1;
+        eye[0] = eye[0] - 1;
+        at[0] = at[0] - 1;
     } else if (event.key == "d") {
-        eye[0] = eye[0] + 0.1;
-        at[0] = at[0] + 0.1;
+        eye[0] = eye[0] + 1;
+        at[0] = at[0] + 1;
     } else if (event.key == "s") {
-        eye[1] = eye[1] - 0.1;
-        at[1] = at[1] - 0.1;
+        eye[1] = eye[1] - 1;
+        at[1] = at[1] - 1;
     } else if (event.key == "w") {
-        eye[1] = eye[1] + 0.1;
-        at[1] = at[1] + 0.1;
+        eye[1] = eye[1] + 1;
+        at[1] = at[1] + 1;
     }
 }
 
