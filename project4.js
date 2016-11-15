@@ -109,7 +109,10 @@ function generateRoomsFromData(){
 // Modelling functions
 
 function polygon(vertices){
-    //var vertices = [vec4(0,0,0),vec4(0,2,0),vec4(3,2,0),vec4(3,4,0),vec4(6,4,0),vec4(6,0,0)];
+    // This function generates a room from the given polygon
+    // Polygon is provided as an array of vertices
+    
+    // If a vertex has 3 elements instead of two then this vertex is a DOOR
     
     var polygonVertices = [], elevatedVertices = [];
     for (var i = 0 ; i < vertices.length; i++){
@@ -125,8 +128,20 @@ function polygon(vertices){
         } else {
             next = i+1;
         }
-        triangle(polygonVertices[i],elevatedVertices[i],elevatedVertices[next]);
-        triangle(polygonVertices[i],polygonVertices[next],elevatedVertices[next]);
+        
+        var a = polygonVertices[i].slice(0);
+        var b = elevatedVertices[i].slice(0);
+        var c = elevatedVertices[next].slice(0);
+        var d = polygonVertices[next].slice(0);
+        
+        // Door CASE
+        if ( vertices[i].length == 3 ){
+            console.log("Door");
+            a[2] = -8;
+            d[2] = -8;
+        }
+        triangle(a,b,c);
+        triangle(a,d,c);
     }   
 }
 
