@@ -19,8 +19,8 @@ var pTop = 3;
 var pBottom = -1;
 
 // ModelView Transformation variables
-var eye = vec3(90.0, 550.0, 1.0);
-var at = vec3(91.0, 550.0, 1.0);
+var eye = vec3(90.0, 550.0, -4.0);
+var at = vec3(91.0, 550.0, -4.0);
 var up = vec3(0.0, 0.0, -1.0);
 
 var mvLocation, pLocation;
@@ -116,8 +116,10 @@ function polygon(vertices){
     
     var polygonVertices = [], elevatedVertices = [];
     for (var i = 0 ; i < vertices.length; i++){
-        polygonVertices.push(vec4(vertices[i][0],vertices[i][1],0));
-        elevatedVertices.push(vec4(vertices[i][0],vertices[i][1],12));
+        // If this vertex is a door vertex
+            polygonVertices.push(vec4(vertices[i][0],vertices[i][1],0));
+            elevatedVertices.push(vec4(vertices[i][0],vertices[i][1],-12)); 
+        
     }
     
     console.log(elevatedVertices);
