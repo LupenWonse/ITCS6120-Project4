@@ -1,0 +1,67 @@
+<script>
+
+    var scale = 10;
+    var currentPoint = [1,2];
+    var polygon = [];
+    
+    window.onload = function () {
+        var imageElement =  document.getElementById("image");
+        
+        
+        
+        //console.log(JSON.stringify(array));
+        
+        document.getElementById("image").width = document.getElementById("image").width * scale;
+        
+        
+        document.getElementById("image").addEventListener("click",function (event){
+            //console.log(document.getElementById("image").offsetTop);
+            
+            currentPoint = [(event.pageX - imageElement.offsetLeft) / scale , (event.pageY - imageElement.offsetTop) / scale];
+            currentPoint = currentPoint = [Math.floor(currentPoint[0]),Math.floor(currentPoint[1])];
+            //console.log("X: " + (event.pageX - imageElement.offsetLeft) / scale  + " Y: " + (event.pageY - imageElement.offsetTop) / scale);
+            console.log(currentPoint);
+            console.log()
+        },false);
+        
+        
+        
+    }
+    
+    window.onkeydown = function(event) {
+        console.log(event.keyCode);
+        if (event.keyCode == 65) {
+            polygon.push(currentPoint)
+            console.log("Point added to the polygon");
+            console.log(polygon);
+        }
+        
+        if (event.keyCode == 87) {
+            polygon.push([currentPoint[0],currentPoint[1],1])
+            console.log("Point added to the polygon as DOOR");
+            console.log(polygon);
+        }
+        
+        if (event.keyCode == 68) {
+            polygon.pop();
+            console.log("Last point deleted from polygon");
+        }
+        
+        if (event.keyCode == 78) {
+            polygon = [];
+            console.log("New Polygon");
+        }
+        
+        
+        console.log(JSON.stringify(polygon));
+    } 
+
+</script>
+
+<html>
+<body>
+    
+    <img src="wood_flr1.jpg" id="image" style="image-rendering: pixelated;">
+    
+</body>
+</html>
