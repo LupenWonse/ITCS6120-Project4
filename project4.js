@@ -6,9 +6,16 @@ var program;
 
 // Data
 var points = [];
+var colors = [];
+
+
+// Temporary Current Color variable
+var currentColor = [];
+
 
 // Vertex Buffer
 var vBuffer;
+var cBuffer;
 
 // Proejction variables
 var near = 1.0;
@@ -51,17 +58,38 @@ window.onload = function init() {
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
     
+    // Create the vertex color buffer
+    // This might have to removed / changed when implementing lighting / shading models
+    cBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    var cPosition = gl.getAttribLocation(program, "vColor");
+    gl.vertexAttribPointer(cPosition, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(cPosition);
+    
 
     // Load uniform locations
     mvLocation = gl.getUniformLocation(program,"modelViewMatrix");
     pLocation = gl.getUniformLocation(program,"projectionMatrix");
 
     
-    // Load data into memory
+    // Generate model data
     generateRoomsFromData();
-    console.log(points);
+    // Upload model data to GPU
+    updateModel();
+    // Start rendering
     render();
 };
+
+// Upload model data to the GPU
+function updateModel () {
+    // Update vertices
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
+    
+    //Update colors
+    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
+}
 
 // Main render function
 function render() {
@@ -71,8 +99,7 @@ function render() {
     mvMatrix = lookAt(eye, at, up);
     pMatrix = perspective();
     
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
+
 
     
     // Update the matrices in the shaders
@@ -114,15 +141,38 @@ function polygon(vertices){
     
     // If a vertex has 3 elements instead of two then this vertex is a DOOR
     
-    var polygonVertices = [], elevatedVertices = [];
+    var polygonVertices = [], elevatedVertices = [], floorVertices = [];
     for (var i = 0 ; i < vertices.length; i++){
         // If this vertex is a door vertex
             polygonVertices.push(vec4(vertices[i][0],vertices[i][1],0));
             elevatedVertices.push(vec4(vertices[i][0],vertices[i][1],-12)); 
         
+        // Generate suitable 
+        floorVertices.push(vertices[i][0]);
+        floorVertices.push(vertices[i][1]);
+        
     }
+    // Triangulate the floor
     
-    console.log(elevatedVertices);
+    currentColor = [0,0,0,1];
+    
+    var floorTriangles = PolyK.Triangulate(floorVertices);
+    // Create triangles for the polygon triangulation
+     for (var i = 0 ; i < floorTriangles.length; i = i + 3){
+         var a = polygonVertices[floorTriangles[i]];
+         var b = polygonVertices[floorTriangles[i+1]];
+         var c = polygonVertices[floorTriangles[i+2]];
+         
+         triangle(a,b,c);
+         
+         var d = elevatedVertices[floorTriangles[i]];
+         var e = elevatedVertices[floorTriangles[i+1]];
+         var f = elevatedVertices[floorTriangles[i+2]];
+         
+         triangle(d,e,f);
+     }
+    
+    currentColor = [0.5,0.5,0.5,1]
     
     for (var i = 0 ; i < vertices.length; i++){
         if (i == vertices.length - 1) {
@@ -156,9 +206,9 @@ function triangle(a, b, c) {
      //normals.push(vec4(b[0],b[1],b[2],0.0));
      //normals.push(vec4(c[0],c[1],c[2],0.0));
     
-    //colors.push(sphereColor);
-    //colors.push(sphereColor);
-    //colors.push(sphereColor);
+    colors.push(currentColor);
+    colors.push(currentColor);
+    colors.push(currentColor);
 
      //index += 3;
 }
