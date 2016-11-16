@@ -13,7 +13,7 @@
 
 attribute vec4 vPosition;
 //attribute vec4 vNormal;
-//attribute vec4 vColor;
+attribute vec4 vColor;
 varying vec4 fColor;
 
 uniform mat4 modelViewMatrix;
@@ -33,7 +33,7 @@ void main()
     //E = -normalize(vertexPosition);
     
     gl_Position = projectionMatrix * modelViewMatrix * vPosition;
-    //fColor = vPosition;
+    fColor = vColor;
 } 
 </script>
 
@@ -76,7 +76,7 @@ void main()
     //resultColor.a = 1.0; 
     
     vec4 resultColor = vec4(0.2,0.2,0.2,1.0);
-    gl_FragColor = resultColor;  
+    gl_FragColor = fColor;  
 }
 </script>
 
