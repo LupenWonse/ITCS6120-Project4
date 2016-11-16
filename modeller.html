@@ -2,7 +2,8 @@
 
     var scale = 10;
     var currentPoint = [1,2];
-    var polygon = [];
+    var rooms = [{name: "NewRoom", polygon:[]}];
+    var room = rooms[0];
     
     window.onload = function () {
         var imageElement =  document.getElementById("image");
@@ -31,29 +32,32 @@
     window.onkeydown = function(event) {
         console.log(event.keyCode);
         if (event.keyCode == 65) {
-            polygon.push(currentPoint)
+            room["polygon"].push(currentPoint)
             console.log("Point added to the polygon");
-            console.log(polygon);
         }
         
         if (event.keyCode == 87) {
-            polygon.push([currentPoint[0],currentPoint[1],1])
+            room["polygon"].push([currentPoint[0],currentPoint[1],1])
             console.log("Point added to the polygon as DOOR");
-            console.log(polygon);
         }
         
         if (event.keyCode == 68) {
-            polygon.pop();
-            console.log("Last point deleted from polygon");
+            room["polygon"].pop();
+            console.log("Last point deleted from room.polygon");
         }
         
         if (event.keyCode == 78) {
-            polygon = [];
+            rooms.push({name: "NewRoom", polygon:[]});
+            room = rooms[rooms.length -1];
             console.log("New Polygon");
+        }
+        if (event.keyCode == 81) {
+            rooms = [{name: "NewRoom", polygon:[]}];
+            console.log("All Cleared");
         }
         
         
-        console.log(JSON.stringify(polygon));
+        console.log(JSON.stringify(rooms));
     } 
 
 </script>
