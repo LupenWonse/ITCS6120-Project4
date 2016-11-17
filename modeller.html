@@ -2,7 +2,7 @@
 
     var scale = 10;
     var currentPoint = [1,2];
-    var rooms = [{name: "NewRoom", polygon:[]}];
+    var rooms = [];
     var room = rooms[0];
     
     window.onload = function () {
@@ -70,7 +70,8 @@
         }
         
         if (event.keyCode == 78) {
-            rooms.push({name: "NewRoom", polygon:[]});
+            roomName = window.prompt("Room number","NewRoom");
+            rooms.push({name: roomName, polygon:[]});
             room = rooms[rooms.length -1];
             console.log("New Polygon");
         }
