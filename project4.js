@@ -235,7 +235,7 @@ function polygon(vertices,floor){
             a[2] = -8 * floor;
             d[2] = -8 * floor;
         }
-        triangle(a,b,c);
+        triangle(a,c,b);
         triangle(a,d,c);
     }   
     
