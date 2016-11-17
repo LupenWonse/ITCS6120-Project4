@@ -8,10 +8,8 @@ var program;
 var points = [];
 var colors = [];
 
-
 // Temporary Current Color variable
 var currentColor = [];
-
 
 // Vertex Buffer
 var vBuffer;
@@ -26,12 +24,23 @@ var pTop = 3;
 var pBottom = -1;
 
 // ModelView Transformation variables
+
+// First Person View
 var eye = vec3(90.0, 550.0, -4.0);
 var at = vec3(91.0, 550.0, -4.0);
 var up = vec3(0.0, 0.0, -1.0);
 
+//Top Down View
+var eye = vec3(90.0, 550.0, -50.0);
+var at = vec3(90.0, 550.0, -49.0);
+var up = vec3(0.0, -1.0, 0.0);
+
 var mvLocation, pLocation;
 var modelView, projection;
+
+// Option Flags
+var showCeilings = false;
+var showFloors = true;
 
 window.onload = function init() {
     "use strict";
@@ -159,17 +168,23 @@ function polygon(vertices){
     var floorTriangles = PolyK.Triangulate(floorVertices);
     // Create triangles for the polygon triangulation
      for (var i = 0 ; i < floorTriangles.length; i = i + 3){
-         var a = polygonVertices[floorTriangles[i]];
-         var b = polygonVertices[floorTriangles[i+1]];
-         var c = polygonVertices[floorTriangles[i+2]];
          
-         triangle(a,b,c);
+         // Floor
+         if (showFloors) {
+            var a = polygonVertices[floorTriangles[i]];
+            var b = polygonVertices[floorTriangles[i+1]];
+            var c = polygonVertices[floorTriangles[i+2]]; 
+            triangle(a,b,c); 
+         }
          
+         if (showCeilings) {
          var d = elevatedVertices[floorTriangles[i]];
          var e = elevatedVertices[floorTriangles[i+1]];
          var f = elevatedVertices[floorTriangles[i+2]];
          
-         triangle(d,e,f);
+         triangle(d,e,f);             
+         }
+
      }
     
     currentColor = [0.5,0.5,0.5,1]
@@ -215,17 +230,17 @@ function triangle(a, b, c) {
 
 window.onkeypress = function () {
     if (event.key == "a") {
-        eye[0] = eye[0] - 1;
-        at[0] = at[0] - 1;
+        eye[0] = eye[0] - 5;
+        at[0] = at[0] - 5;
     } else if (event.key == "d") {
-        eye[0] = eye[0] + 1;
-        at[0] = at[0] + 1;
+        eye[0] = eye[0] + 5;
+        at[0] = at[0] + 5;
     } else if (event.key == "s") {
-        eye[1] = eye[1] - 1;
-        at[1] = at[1] - 1;
+        eye[1] = eye[1] - 5;
+        at[1] = at[1] - 5;
     } else if (event.key == "w") {
-        eye[1] = eye[1] + 1;
-        at[1] = at[1] + 1;
+        eye[1] = eye[1] + 5;
+        at[1] = at[1] + 5;
     }
 }
 
