@@ -7,13 +7,15 @@ var program;
 // Data
 var points = [];
 var colors = [];
+var normals = [];
 
 // Temporary Current Color variable
 var currentColor = [];
 
-// Vertex Buffer
+// Vertex Buffer // Color Buffer // Normals Buffer
 var vBuffer;
 var cBuffer;
+var nBuffer;
 
 // Proejction variables
 var near = 1.0;
@@ -79,6 +81,13 @@ window.onload = function init() {
     gl.vertexAttribPointer(cPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(cPosition);
     
+    // Create the normals buffer
+    nBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
+    var nPosition = gl.getAttribLocation(program, "vNormal");
+    gl.vertexAttribPointer(nPosition, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(nPosition);
+    
 
     // Load uniform locations
     mvLocation = gl.getUniformLocation(program,"modelViewMatrix");
@@ -102,6 +111,10 @@ function updateModel () {
     //Update colors
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
+    
+    //Update normals
+    gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(normals), gl.STATIC_DRAW );
 }
 
 // Main render function
@@ -146,7 +159,6 @@ function generateRoomsFromData(){
     
     for (room in data.rooms) {
         floor = data.rooms[room].floor;
-        console.log(room);
         polygon(data.rooms[room].polygon, floor);
     }
 }
@@ -231,9 +243,13 @@ function triangle(a, b, c) {
     points.push(b);
     points.push(c);
     
-     //normals.push(vec4(a[0],a[1],a[2],0.0));
-     //normals.push(vec4(b[0],b[1],b[2],0.0));
-     //normals.push(vec4(c[0],c[1],c[2],0.0));
+    var ab = subtract(b,a);
+    var ac = subtract(c,a);
+    var normal = cross(ab,ac);
+    
+    normals.push(normal);
+    normals.push(normal);
+    normals.push(normal);
     
     colors.push(currentColor);
     colors.push(currentColor);
