@@ -25,7 +25,7 @@ var pBottom = -1;
 
 // ModelView Transformation variables
 
-var lookAlpha = 90/180*Math.PI;
+var lookAlpha = 0/180*Math.PI;
 var lookBeta = 90/180*Math.PI; ;
 // First Person View
 var eye = vec3(90.0, 550.0, -4.0);
@@ -41,7 +41,7 @@ var mvLocation, pLocation;
 var modelView, projection;
 
 // Option Flags
-var showCeilings = false;
+var showCeilings = true;
 var showFloors = true;
 
 window.onload = function init() {
@@ -55,7 +55,9 @@ window.onload = function init() {
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0.5, 0.5, 1.0, 1.0);
     // Enable depth test
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
     gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.BLEND);
 
     //
     //  Load shaders and initialize attribute buffers
@@ -138,15 +140,21 @@ function perspective() {
 
 // Data handling functions
 function generateRoomsFromData(){
+    // Clear all the data
+    points = [];
+    colors = [];
+    
     for (room in data.rooms) {
-        polygon(data.rooms[room].polygon);
+        floor = data.rooms[room].floor;
+        console.log(room);
+        polygon(data.rooms[room].polygon, floor);
     }
 }
 
 
 // Modelling functions
 
-function polygon(vertices){
+function polygon(vertices,floor){
     // This function generates a room from the given polygon
     // Polygon is provided as an array of vertices
     
@@ -155,8 +163,8 @@ function polygon(vertices){
     var polygonVertices = [], elevatedVertices = [], floorVertices = [];
     for (var i = 0 ; i < vertices.length; i++){
         // If this vertex is a door vertex
-            polygonVertices.push(vec4(vertices[i][0],vertices[i][1],0));
-            elevatedVertices.push(vec4(vertices[i][0],vertices[i][1],-12)); 
+            polygonVertices.push(vec4(vertices[i][0],vertices[i][1],(floor-1)*-12));
+            elevatedVertices.push(vec4(vertices[i][0],vertices[i][1],floor*-12)); 
         
         // Generate suitable 
         floorVertices.push(vertices[i][0]);
@@ -165,10 +173,39 @@ function polygon(vertices){
     }
     // Triangulate the floor
     
-    currentColor = [0,0,0,1];
     
     var floorTriangles = PolyK.Triangulate(floorVertices);
-    // Create triangles for the polygon triangulation
+    
+
+    
+    // Set wall color
+    currentColor = [0.5,0.5,0.5,1]
+    // Draw Walls
+    for (var i = 0 ; i < vertices.length; i++){
+        if (i == vertices.length - 1) {
+            next = 0
+        } else {
+            next = i+1;
+        }
+        
+        var a = polygonVertices[i].slice(0);
+        var b = elevatedVertices[i].slice(0);
+        var c = elevatedVertices[next].slice(0);
+        var d = polygonVertices[next].slice(0);
+        
+        // Door CASE
+        if ( vertices[i].length == 3 ){
+            console.log("Door");
+            a[2] = -8 * floor;
+            d[2] = -8 * floor;
+        }
+        triangle(a,b,c);
+        triangle(a,d,c);
+    }   
+    
+        // Create triangles for the polygon triangulation
+    // Set floor and ceiling color
+    currentColor = [0,0,0,1];
      for (var i = 0 ; i < floorTriangles.length; i = i + 3){
          
          // Floor
@@ -186,32 +223,7 @@ function polygon(vertices){
          
          triangle(d,e,f);             
          }
-
      }
-    
-    currentColor = [0.5,0.5,0.5,1]
-    
-    for (var i = 0 ; i < vertices.length; i++){
-        if (i == vertices.length - 1) {
-            next = 0
-        } else {
-            next = i+1;
-        }
-        
-        var a = polygonVertices[i].slice(0);
-        var b = elevatedVertices[i].slice(0);
-        var c = elevatedVertices[next].slice(0);
-        var d = polygonVertices[next].slice(0);
-        
-        // Door CASE
-        if ( vertices[i].length == 3 ){
-            console.log("Door");
-            a[2] = -8;
-            d[2] = -8;
-        }
-        triangle(a,b,c);
-        triangle(a,d,c);
-    }   
 }
 
 function triangle(a, b, c) {
@@ -248,11 +260,13 @@ window.onkeydown = function () {
     } else if (event.keyCode == 37){
         lookLeft();
     } else if (event.keyCode == 38){
-        lookUp();
+        //lookUp();
+        moveForward();
     } else if (event.keyCode == 39){
         lookRight();
     } else if (event.keyCode == 40){
-        lookDown();
+        //lookDown();
+        moveBackwards();
     }
 }
 
@@ -312,6 +326,13 @@ function look(){
     var z = eye[2] + Math.cos(lookBeta)
 
     at = vec3(x,y,z);
+}
+
+// UI Functions
+function uiChanged(){
+    showCeilings = document.getElementById("checkboxCeiling").checked;
+    generateRoomsFromData();
+    updateModel();
 }
 
 

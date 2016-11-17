@@ -2,6 +2,7 @@
 
     var scale = 10;
     var currentPoint = [1,2];
+    var floor = 1;
     var rooms = [];
     var room = rooms[0];
     
@@ -21,7 +22,7 @@
             ctx.imageSmoothingEnabled = false;
             ctx.drawImage(img,0,0,imageCanvas.width,imageCanvas.height); 
         }
-        img.src = "wood_flr1.jpg";
+        img.src = "wood_flr2.jpg";
         
         imageCanvas.addEventListener("click",function (event){     
             currentPoint = [(event.pageX - imageCanvas.offsetLeft) / scale , (event.pageY - imageCanvas.offsetTop) / scale];
@@ -71,13 +72,17 @@
         
         if (event.keyCode == 78) {
             roomName = window.prompt("Room number","NewRoom");
-            rooms.push({name: roomName, polygon:[]});
+            rooms.push({name: roomName, floor: floor, polygon:[]});
             room = rooms[rooms.length -1];
             console.log("New Polygon");
         }
         if (event.keyCode == 81) {
             rooms = [];
             room = rooms[0];
+            console.log("All Cleared");
+        }
+        if (event.keyCode == 70) {
+            floor = window.prompt("Floor Number","1");
             console.log("All Cleared");
         }
         
