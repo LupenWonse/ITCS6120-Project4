@@ -41,10 +41,6 @@ void main()
 
 precision mediump float;
 
-uniform vec4 ambientProduct;
-uniform vec4 diffuseProduct; 
-uniform vec4 specularProduct; 
-
 uniform vec4 reflectAmbient;
 uniform vec4 reflectDiffuse;
 
@@ -56,13 +52,13 @@ varying vec4 fColor;
 
 void main()
 {
-    //vec4 ambientProduct = fColor * reflectAmbient;
-    //vec4 diffuseProduct = fColor * reflectDiffuse;
+    vec4 ambientProduct = fColor * reflectAmbient;
+    vec4 diffuseProduct = fColor * reflectDiffuse;
 
-    //vec4 resultColor; 
+    vec4 resultColor; 
     //vec3 H = normalize( L + E );
     
-    //vec4 ambient = ambientProduct; 
+    vec4 ambient = ambientProduct; 
     
     //float Kd = max( dot(L, N), 0.0 ); 
     //vec4  diffuse = Kd*diffuseProduct; 
@@ -72,11 +68,11 @@ void main()
     
     //if( dot(L, N) < 0.0 ) specular = vec4(0.0, 0.0, 0.0, 1.0); 
     
-    //resultColor = ambient + diffuse + specular; 
+    resultColor = ambient; // + diffuse + specular; 
     //resultColor.a = 1.0; 
     
-    vec4 resultColor = vec4(0.2,0.2,0.2,1.0);
-    gl_FragColor = fColor;  
+    //vec4 resultColor = vec4(0.2,0.2,0.2,1.0);
+    gl_FragColor = resultColor;  
 }
 </script>
 

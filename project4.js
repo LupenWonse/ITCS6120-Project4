@@ -12,10 +12,17 @@ var normals = [];
 // Temporary Current Color variable
 var currentColor = [];
 
+// Material properties for lighting
+var reflectAmbient = [0.2,0.2,0.2,1];
+var reflectDiffuse = [0.2,0.2,0.2,1];
+
 // Vertex Buffer // Color Buffer // Normals Buffer
 var vBuffer;
 var cBuffer;
 var nBuffer;
+// Uniform locations
+var reflectAmbientUniformLocation;
+var reflectDiffuseUniformLocation;
 
 // Proejction variables
 var near = 1.0;
@@ -92,6 +99,9 @@ window.onload = function init() {
     // Load uniform locations
     mvLocation = gl.getUniformLocation(program,"modelViewMatrix");
     pLocation = gl.getUniformLocation(program,"projectionMatrix");
+    
+    reflectAmbientUniformLocation = gl.getUniformLocation(program,"reflectAmbient");
+    reflectDiffuseUniformLocation = gl.getUniformLocation(program,"reflectDiffuse");
 
     
     // Generate model data
@@ -115,6 +125,11 @@ function updateModel () {
     //Update normals
     gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(normals), gl.STATIC_DRAW );
+    
+    // Update materials
+    gl.uniform4fv(reflectAmbientUniformLocation, flatten(reflectAmbient));
+    gl.uniform4fv(reflectDiffuseUniformLocation, flatten(reflectDiffuse));
+    
 }
 
 // Main render function
