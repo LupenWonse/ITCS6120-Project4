@@ -6,23 +6,47 @@
     var room = rooms[0];
     
     window.onload = function () {
-        var imageElement =  document.getElementById("image");
+        var imageCanvas =  document.getElementById("image");
+        
+        // Load the image
+        var img = new Image();
         
         
         
-        //console.log(JSON.stringify(array));
-        
-        document.getElementById("image").width = document.getElementById("image").width * scale;
-        
-        
-        document.getElementById("image").addEventListener("click",function (event){
-            //console.log(document.getElementById("image").offsetTop);
+        img.onload = function(){
+            imageCanvas.width = img.width * scale;
+            imageCanvas.height = img.height * scale;
             
-            currentPoint = [(event.pageX - imageElement.offsetLeft) / scale , (event.pageY - imageElement.offsetTop) / scale];
+            var ctx = document.getElementById("image").getContext('2d'); 
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(img,0,0,imageCanvas.width,imageCanvas.height); 
+        }
+        img.src = "wood_flr1.jpg";
+        
+        imageCanvas.addEventListener("click",function (event){     
+            currentPoint = [(event.pageX - imageCanvas.offsetLeft) / scale , (event.pageY - imageCanvas.offsetTop) / scale];
             currentPoint = currentPoint = [Math.floor(currentPoint[0]),Math.floor(currentPoint[1])];
-            //console.log("X: " + (event.pageX - imageElement.offsetLeft) / scale  + " Y: " + (event.pageY - imageElement.offsetTop) / scale);
+            //console.log("X: " + (event.pageX - imageCanvas.offsetLeft) / scale  + " Y: " + (event.pageY - imageCanvas.offsetTop) / scale);
             console.log(currentPoint);
             console.log()
+        },false);
+        
+        imageCanvas.addEventListener("mousemove",function (event){     
+            currentPoint = [(event.pageX - imageCanvas.offsetLeft) / scale , (event.pageY - imageCanvas.offsetTop) / scale];
+            currentPoint = currentPoint = [Math.floor(currentPoint[0])*scale,Math.floor(currentPoint[1])*scale];
+            //console.log("X: " + (event.pageX - imageCanvas.offsetLeft) / scale  + " Y: " + (event.pageY - imageCanvas.offsetTop) / scale);
+            console.log(currentPoint);
+            console.log()
+            
+            var ctx = document.getElementById("image").getContext('2d');
+            
+            ctx.clearRect(0, 0, img.width, img.height);
+            ctx.drawImage(img,0,0,imageCanvas.width,imageCanvas.height); 
+            
+            ctx.fillStyle = "rgb(200,0,0)"; // sets the color to fill in the rectangle with
+            ctx.fillRect(currentPoint[0], currentPoint[1], scale, scale);   // draws the rectangle at position 10, 10 with a width of 55 and a height of 50
+            
+            
         },false);
         
         
@@ -65,8 +89,6 @@
 
 <html>
 <body>
-    
-    <img src="wood_flr1.jpg" id="image" style="image-rendering: pixelated;">
-    
+    <canvas id="image"></canvas>
 </body>
 </html>
