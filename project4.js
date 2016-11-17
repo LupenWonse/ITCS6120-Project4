@@ -16,6 +16,9 @@ var currentColor = [];
 var reflectAmbient = [0.2,0.2,0.2,1];
 var reflectDiffuse = [0.2,0.2,0.2,1];
 
+// Light properties
+var lightPosition = vec3(130,130,-130);
+
 // Vertex Buffer // Color Buffer // Normals Buffer
 var vBuffer;
 var cBuffer;
@@ -23,6 +26,7 @@ var nBuffer;
 // Uniform locations
 var reflectAmbientUniformLocation;
 var reflectDiffuseUniformLocation;
+var lightPositionUniformLocation;
 
 // Proejction variables
 var near = 1.0;
@@ -66,6 +70,7 @@ window.onload = function init() {
     // Enable depth test
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
     gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
     gl.disable(gl.BLEND);
 
     //
@@ -102,6 +107,7 @@ window.onload = function init() {
     
     reflectAmbientUniformLocation = gl.getUniformLocation(program,"reflectAmbient");
     reflectDiffuseUniformLocation = gl.getUniformLocation(program,"reflectDiffuse");
+    lightPositionUniformLocation = gl.getUniformLocation(program,"lightPosition");
 
     
     // Generate model data
@@ -129,6 +135,9 @@ function updateModel () {
     // Update materials
     gl.uniform4fv(reflectAmbientUniformLocation, flatten(reflectAmbient));
     gl.uniform4fv(reflectDiffuseUniformLocation, flatten(reflectDiffuse));
+    
+    // Update lights
+    gl.uniform3fv(lightPositionUniformLocation,lightPosition);
     
 }
 

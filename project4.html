@@ -18,7 +18,7 @@ varying vec4 fColor;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
-uniform vec4 lightPosition;
+uniform vec3 lightPosition;
 
 varying vec3 N, L, E;
 
@@ -27,9 +27,9 @@ uniform vec3 theta;
 void main() 
 {
 
-    //vec3 vertexPosition = (modelViewMatrix *vPosition).xyz;
+    vec3 vertexPosition = (modelViewMatrix *vPosition).xyz;
     N = normalize((modelViewMatrix * vNormal).xyz);
-    //L = normalize(lightPosition.xyz - vertexPosition);
+    L = normalize(lightPosition - vertexPosition);
     //E = -normalize(vertexPosition);
     
     gl_Position = projectionMatrix * modelViewMatrix * vPosition;
@@ -56,19 +56,19 @@ void main()
     vec4 diffuseProduct = fColor * reflectDiffuse;
 
     vec4 resultColor; 
-    //vec3 H = normalize( L + E );
+    vec3 H = normalize( L + E );
     
     vec4 ambient = ambientProduct; 
     
-    //float Kd = max( dot(L, N), 0.0 ); 
-    //vec4  diffuse = Kd*diffuseProduct; 
+    float Kd = max( dot(L, N), 0.0 ); 
+    vec4  diffuse = Kd*diffuseProduct; 
     
     //float Ks = pow( max(dot(N, H), 0.0), shininess ); 
     //vec4  specular = Ks * specularProduct; 
     
     //if( dot(L, N) < 0.0 ) specular = vec4(0.0, 0.0, 0.0, 1.0); 
     
-    resultColor = ambient; // + diffuse + specular; 
+    resultColor = ambient + diffuse; // + specular; 
     //resultColor.a = 1.0; 
     
     //vec4 resultColor = vec4(0.2,0.2,0.2,1.0);
