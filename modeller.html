@@ -1,0 +1,93 @@
+<script>
+
+    var scale = 10;
+    var currentPoint = [1,2];
+    var rooms = [{name: "NewRoom", polygon:[]}];
+    var room = rooms[0];
+    
+    window.onload = function () {
+        var imageCanvas =  document.getElementById("image");
+        
+        // Load the image
+        var img = new Image();
+        
+        
+        
+        img.onload = function(){
+            imageCanvas.width = img.width * scale;
+            imageCanvas.height = img.height * scale;
+            
+            var ctx = document.getElementById("image").getContext('2d'); 
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(img,0,0,imageCanvas.width,imageCanvas.height); 
+        }
+        img.src = "wood_flr1.jpg";
+        
+        imageCanvas.addEventListener("click",function (event){     
+            currentPoint = [(event.pageX - imageCanvas.offsetLeft) / scale , (event.pageY - imageCanvas.offsetTop) / scale];
+            currentPoint = currentPoint = [Math.floor(currentPoint[0]),Math.floor(currentPoint[1])];
+            //console.log("X: " + (event.pageX - imageCanvas.offsetLeft) / scale  + " Y: " + (event.pageY - imageCanvas.offsetTop) / scale);
+            console.log(currentPoint);
+            console.log()
+        },false);
+        
+        imageCanvas.addEventListener("mousemove",function (event){     
+            
+            guidePoint = [(event.pageX - imageCanvas.offsetLeft) / scale , (event.pageY - imageCanvas.offsetTop) / scale];
+            
+            guidePoint =  [Math.floor(guidePoint[0])*scale,Math.floor(guidePoint[1])*scale];
+            
+            var ctx = document.getElementById("image").getContext('2d');
+            
+            ctx.clearRect(0, 0, img.width, img.height);
+            ctx.drawImage(img,0,0,imageCanvas.width,imageCanvas.height); 
+            
+            ctx.fillStyle = "rgb(200,0,0)"; // sets the color to fill in the rectangle with
+            ctx.fillRect(guidePoint[0], guidePoint[1], scale, scale);   // draws the rectangle at position 10, 10 with a width of 55 and a height of 50
+            
+            
+        },false);
+        
+        
+        
+    }
+    
+    window.onkeydown = function(event) {
+        console.log(event.keyCode);
+        if (event.keyCode == 65) {
+            room["polygon"].push(currentPoint)
+            console.log("Point added to the polygon");
+        }
+        
+        if (event.keyCode == 87) {
+            room["polygon"].push([currentPoint[0],currentPoint[1],1])
+            console.log("Point added to the polygon as DOOR");
+        }
+        
+        if (event.keyCode == 68) {
+            room["polygon"].pop();
+            console.log("Last point deleted from room.polygon");
+        }
+        
+        if (event.keyCode == 78) {
+            rooms.push({name: "NewRoom", polygon:[]});
+            room = rooms[rooms.length -1];
+            console.log("New Polygon");
+        }
+        if (event.keyCode == 81) {
+            rooms = [{name: "NewRoom", polygon:[]}];
+            room = rooms[0];
+            console.log("All Cleared");
+        }
+        
+        
+        console.log(JSON.stringify(rooms));
+    } 
+
+</script>
+
+<html>
+<body>
+    <canvas id="image"></canvas>
+</body>
+</html>
