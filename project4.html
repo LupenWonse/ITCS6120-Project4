@@ -6,6 +6,7 @@
 
 <!--Load External triangulation library-->
 <script type="text/javascript" src="PolyK.js"></script>
+<script src="Libraries/jscolor.js"></script>
 
 <script type="text/javascript" src="plan.json"></script>
 
@@ -90,7 +91,10 @@ void main()
                 Oops ... your browser doesn't support the HTML5 canvas element
             </canvas>
             <br/>
-            <input type="checkbox" checked onchange="uiChanged()" id="checkboxCeiling">Ceilings</input>
+            <input type="checkbox" checked onchange="uiChanged()" id="checkboxCeiling">Ceilings
+            Wall Color:<input id="colorWall" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" >
+            Floor Color:<input id="colorFloor" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" >
+            Ceiling Color:<input id="colorCeiling" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" >
 
         </center>
 </body>

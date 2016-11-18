@@ -13,8 +13,11 @@ var normals = [];
 var currentColor = [];
 
 // Material properties for lighting
-var reflectAmbient = [0.3,0.3,0.3,1];
-var reflectDiffuse = [0.5,0.5,0.5,1];
+var reflectAmbient = [0.5,0.5,0.5,1];
+var reflectDiffuse = [0.3,0.3,0.3,1];
+var wallColor = [1,0.55,0,1];
+var floorColor = [0.9,0.9,0.9,1];
+var ceilingColor = [0.9,0.9,0.9,1];
 
 // Light properties
 var lightPosition = vec4(0,0,-5);
@@ -214,7 +217,7 @@ function polygon(vertices,floor){
 
     
     // Set wall color
-    currentColor = [0.5,0.5,0.5,1]
+    currentColor = wallColor;
     // Draw Walls
     for (var i = 0 ; i < vertices.length; i++){
         if (i == vertices.length - 1) {
@@ -239,11 +242,12 @@ function polygon(vertices,floor){
     
         // Create triangles for the polygon triangulation
     // Set floor and ceiling color
-    currentColor = [0.2,0.2,0.2,1];
+    
      for (var i = 0 ; i < floorTriangles.length; i = i + 3){
          
          // Floor
          if (showFloors) {
+             currentColor = floorColor;
             var a = polygonVertices[floorTriangles[i]];
             var b = polygonVertices[floorTriangles[i+1]];
             var c = polygonVertices[floorTriangles[i+2]];
@@ -251,6 +255,7 @@ function polygon(vertices,floor){
          }
          
          if (showCeilings) {
+             currentColor = ceilingColor;
              var d = elevatedVertices[floorTriangles[i]];
              var e = elevatedVertices[floorTriangles[i+1]];
              var f = elevatedVertices[floorTriangles[i+2]];
@@ -364,8 +369,19 @@ function look(){
 }
 
 // UI Functions
-function uiChanged(){
+function uiChanged(object){
     showCeilings = document.getElementById("checkboxCeiling").checked;
+    
+    switch (object.valueElement.id){
+        case "colorWall":
+            wallColor = vec4(object.rgb[0]/255, object.rgb[1]/255, object.rgb[2]/255,1);
+            break;
+        case "colorFloor":
+            floorColor = vec4(object.rgb[0]/255, object.rgb[1]/255, object.rgb[2]/255,1);
+            break;
+        case "colorCeiling":
+            ceilingColor = vec4(object.rgb[0]/255, object.rgb[1]/255, object.rgb[2]/255,1);
+    }
     generateRoomsFromData();
     updateModel();
 }
