@@ -60,6 +60,10 @@ var modelView, projection;
 var showCeilings = true;
 var showFloors = true;
 
+//Internal Data
+var countRooms = 0;
+var countTriangles = 0;
+
 window.onload = function init() {
     "use strict";
     canvas = document.getElementById("gl-canvas");
@@ -139,6 +143,9 @@ function updateModel () {
     // Update lights
     gl.uniform4fv(lightPositionUniformLocation,lightPosition);
     
+    // Update UI
+    document.getElementById("numberOfRooms").innerHTML = countRooms;
+    document.getElementById("numberOfTriangles").innerHTML = countTriangles;
 }
 
 // Main render function
@@ -183,7 +190,11 @@ function generateRoomsFromData(){
     colors = [];
     normals = [];
     
+    countRooms = 0;
+    countTriangles = 0;
+    
     for (room in data.rooms) {
+        countRooms++;
         floor = data.rooms[room].floor;
         polygon(data.rooms[room].polygon, floor);
     }
@@ -209,12 +220,9 @@ function polygon(vertices,floor){
         floorVertices.push(vertices[i][1]);
         
     }
+    
     // Triangulate the floor
-    
-    
     var floorTriangles = PolyK.Triangulate(floorVertices);
-    
-
     
     // Set wall color
     currentColor = wallColor;
@@ -240,8 +248,7 @@ function polygon(vertices,floor){
         triangle(d,c,b);
     }   
     
-        // Create triangles for the polygon triangulation
-    // Set floor and ceiling color
+    // Draw floors and ceilings
     
      for (var i = 0 ; i < floorTriangles.length; i = i + 3){
          
@@ -267,28 +274,31 @@ function polygon(vertices,floor){
 function triangle(a, b, c) {
     var ab = subtract(b,a);
     var ac = subtract(c,a);
+    // Calculate normal with cross product
     var normal = vec4(cross(ab,ac),0);
     
-    points.push(a);
-    points.push(b);
-    points.push(c);
-    
-    normals.push(normal);
-    normals.push(normal);
-    normals.push(normal);
-    
-    colors.push(currentColor);
-    colors.push(currentColor);
-    colors.push(currentColor);
+    // Remove any calls with colinear points
+    if(length(normal) != 0){
+        points.push(a);
+        points.push(b);
+        points.push(c);
+
+        normals.push(normal);
+        normals.push(normal);
+        normals.push(normal);
+
+        colors.push(currentColor);
+        colors.push(currentColor);
+        colors.push(currentColor);
+
+        countTriangles++;
+    }
 }
 
 // Movement controller functions
 
 window.onkeydown = function () {
    // console.log(event.keyCode);
-    
-    
-    
     if (event.key == "a") {
         moveLeft();
     } else if (event.key == "d") {
@@ -300,13 +310,11 @@ window.onkeydown = function () {
     } else if (event.keyCode == 37){
         lookLeft();
     } else if (event.keyCode == 38){
-        //lookUp();
-        moveForward();
+        lookUp();
     } else if (event.keyCode == 39){
         lookRight();
     } else if (event.keyCode == 40){
-        //lookDown();
-        moveBackwards();
+        lookDown();
     }
 }
 
@@ -372,7 +380,8 @@ function look(){
 function uiChanged(object){
     showCeilings = document.getElementById("checkboxCeiling").checked;
     
-    switch (object.valueElement.id){
+    if(object){
+        switch (object.valueElement.id){
         case "colorWall":
             wallColor = vec4(object.rgb[0]/255, object.rgb[1]/255, object.rgb[2]/255,1);
             break;
@@ -381,6 +390,7 @@ function uiChanged(object){
             break;
         case "colorCeiling":
             ceilingColor = vec4(object.rgb[0]/255, object.rgb[1]/255, object.rgb[2]/255,1);
+        } 
     }
     generateRoomsFromData();
     updateModel();

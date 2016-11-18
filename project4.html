@@ -32,7 +32,6 @@ void main()
     vec3 vLightPosition = (modelViewMatrix * lightPosition).xyz;
     N = normalize((modelViewMatrix * vNormal).xyz);
     L = normalize(vLightPosition - vertexPosition);
-    //E = -normalize(vertexPosition);
     
     gl_Position = projectionMatrix * modelViewMatrix * vPosition;
     fColor = vColor;
@@ -65,38 +64,29 @@ void main()
     float Kd = max( dot(L, N), 0.0 ); 
     vec4  diffuse = Kd*diffuseProduct; 
     
-    //float Ks = pow( max(dot(N, H), 0.0), shininess ); 
-    //vec4  specular = Ks * specularProduct; 
-    
-    //if( dot(L, N) < 0.0 ) specular = vec4(0.0, 0.0, 0.0, 1.0); 
-    
     resultColor = ambient + diffuse; // + specular; 
-    //resultColor.a = 1.0; 
     
-    //resultColor = vec4(N.x,N.y,N.z,1.0);
-    //resultColor = vec4(L.x,L.y,L.z,1.0);
     gl_FragColor = resultColor;  
 }
 </script>
 
 <html>
     <body>
-        <div style="background-color:blue;text-align:center;text:white">
-            <h2>ITCS 6120 - Project4a</h2>
-        </div>
         <center>
-            
+            <h2>ITCS 6120 - Project4 a</h2>
+                <a href="about.html">About</a>
             <p>Ahmet Gencoglu - 800982227</p>
             <p>Use the wsad keys to move and arrow keys to look around!</p>
             <canvas id="gl-canvas" width="800" height="600">
                 Oops ... your browser doesn't support the HTML5 canvas element
             </canvas>
             <br/>
-            <input type="checkbox" checked onchange="uiChanged()" id="checkboxCeiling">Ceilings
             Wall Color:<input id="colorWall" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" >
             Floor Color:<input id="colorFloor" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" >
-            Ceiling Color:<input id="colorCeiling" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" >
-
+            Ceiling Color:<input id="colorCeiling" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" ><br>            
+            <input type="checkbox" checked onchange="uiChanged()" id="checkboxCeiling">Ceilings <br>
+            Number of rooms generated: <span id="numberOfRooms"></span><br>
+            Number of triangles generated: <span id="numberOfTriangles"></span>
         </center>
 </body>
 </html>
