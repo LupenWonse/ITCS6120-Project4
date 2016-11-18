@@ -18,7 +18,7 @@ varying vec4 fColor;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
-uniform vec3 lightPosition;
+uniform vec4 lightPosition;
 
 varying vec3 N, L, E;
 
@@ -27,9 +27,10 @@ uniform vec3 theta;
 void main() 
 {
 
-    vec3 vertexPosition = (modelViewMatrix *vPosition).xyz;
+    vec3 vertexPosition = (modelViewMatrix * vPosition).xyz;
+    vec3 vLightPosition = (modelViewMatrix * lightPosition).xyz;
     N = normalize((modelViewMatrix * vNormal).xyz);
-    L = normalize(lightPosition - vertexPosition);
+    L = normalize(vLightPosition - vertexPosition);
     //E = -normalize(vertexPosition);
     
     gl_Position = projectionMatrix * modelViewMatrix * vPosition;
@@ -71,7 +72,7 @@ void main()
     resultColor = ambient + diffuse; // + specular; 
     //resultColor.a = 1.0; 
     
-    //vec4 resultColor = vec4(0.2,0.2,0.2,1.0);
+    //resultColor = vec4(N.x,N.y,N.z,1.0);
     gl_FragColor = resultColor;  
 }
 </script>

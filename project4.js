@@ -13,11 +13,11 @@ var normals = [];
 var currentColor = [];
 
 // Material properties for lighting
-var reflectAmbient = [0.2,0.2,0.2,1];
-var reflectDiffuse = [0.2,0.2,0.2,1];
+var reflectAmbient = [0.3,0.3,0.3,1];
+var reflectDiffuse = [0.5,0.5,0.5,1];
 
 // Light properties
-var lightPosition = vec3(130,130,-130);
+var lightPosition = vec4(0,0,-5);
 
 // Vertex Buffer // Color Buffer // Normals Buffer
 var vBuffer;
@@ -68,10 +68,8 @@ window.onload = function init() {
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0.5, 0.5, 1.0, 1.0);
     // Enable depth test
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
-    gl.disable(gl.BLEND);
 
     //
     //  Load shaders and initialize attribute buffers
@@ -97,7 +95,7 @@ window.onload = function init() {
     nBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
     var nPosition = gl.getAttribLocation(program, "vNormal");
-    gl.vertexAttribPointer(nPosition, 3, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(nPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(nPosition);
     
 
@@ -109,7 +107,6 @@ window.onload = function init() {
     reflectDiffuseUniformLocation = gl.getUniformLocation(program,"reflectDiffuse");
     lightPositionUniformLocation = gl.getUniformLocation(program,"lightPosition");
 
-    
     // Generate model data
     generateRoomsFromData();
     // Upload model data to GPU
@@ -137,7 +134,7 @@ function updateModel () {
     gl.uniform4fv(reflectDiffuseUniformLocation, flatten(reflectDiffuse));
     
     // Update lights
-    gl.uniform3fv(lightPositionUniformLocation,lightPosition);
+    gl.uniform4fv(lightPositionUniformLocation,lightPosition);
     
 }
 
@@ -149,12 +146,13 @@ function render() {
     mvMatrix = lookAt(eye, at, up);
     pMatrix = perspective();
     
-
-
-    
     // Update the matrices in the shaders
     gl.uniformMatrix4fv(mvLocation, false, flatten(mvMatrix));
     gl.uniformMatrix4fv(pLocation, false, flatten(pMatrix));
+    
+    // Update lights
+    gl.uniform4fv(lightPositionUniformLocation,lightPosition);
+    
     // Draw
     gl.drawArrays(gl.TRIANGLES, 0, points.length);
 
@@ -180,6 +178,7 @@ function generateRoomsFromData(){
     // Clear all the data
     points = [];
     colors = [];
+    normals = [];
     
     for (room in data.rooms) {
         floor = data.rooms[room].floor;
@@ -200,7 +199,7 @@ function polygon(vertices,floor){
     for (var i = 0 ; i < vertices.length; i++){
         // If this vertex is a door vertex
             polygonVertices.push(vec4(vertices[i][0],vertices[i][1],(floor-1)*-12));
-            elevatedVertices.push(vec4(vertices[i][0],vertices[i][1],floor*-12)); 
+            elevatedVertices.push(vec4(vertices[i][0],vertices[i][1],floor*(-12))); 
         
         // Generate suitable 
         floorVertices.push(vertices[i][0]);
@@ -231,46 +230,44 @@ function polygon(vertices,floor){
         
         // Door CASE
         if ( vertices[i].length == 3 ){
-            console.log("Door");
             a[2] = -8 * floor;
             d[2] = -8 * floor;
         }
-        triangle(a,c,b);
-        triangle(a,d,c);
+        triangle(a,d,b);
+        triangle(d,c,b);
     }   
     
         // Create triangles for the polygon triangulation
     // Set floor and ceiling color
-    currentColor = [0,0,0,1];
+    currentColor = [0.2,0.2,0.2,1];
      for (var i = 0 ; i < floorTriangles.length; i = i + 3){
          
          // Floor
          if (showFloors) {
             var a = polygonVertices[floorTriangles[i]];
             var b = polygonVertices[floorTriangles[i+1]];
-            var c = polygonVertices[floorTriangles[i+2]]; 
-            triangle(a,b,c); 
+            var c = polygonVertices[floorTriangles[i+2]];
+            triangle(a,c,b); 
          }
          
          if (showCeilings) {
-         var d = elevatedVertices[floorTriangles[i]];
-         var e = elevatedVertices[floorTriangles[i+1]];
-         var f = elevatedVertices[floorTriangles[i+2]];
-         
-         triangle(d,e,f);             
+             var d = elevatedVertices[floorTriangles[i]];
+             var e = elevatedVertices[floorTriangles[i+1]];
+             var f = elevatedVertices[floorTriangles[i+2]];
+             triangle(d,e,f);             
          }
      }
 }
 
 function triangle(a, b, c) {
+    var ab = subtract(b,a);
+    var ac = subtract(c,a);
+    var normal = vec4(cross(ab,ac),0);
+    
     points.push(a);
     points.push(b);
     points.push(c);
     
-    var ab = subtract(b,a);
-    var ac = subtract(c,a);
-    var normal = cross(ab,ac);
-    
     normals.push(normal);
     normals.push(normal);
     normals.push(normal);
@@ -278,8 +275,6 @@ function triangle(a, b, c) {
     colors.push(currentColor);
     colors.push(currentColor);
     colors.push(currentColor);
-
-     //index += 3;
 }
 
 // Movement controller functions
