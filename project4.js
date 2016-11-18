@@ -20,7 +20,7 @@ var floorColor = [0.9,0.9,0.9,1];
 var ceilingColor = [0.9,0.9,0.9,1];
 
 // Light properties
-var lightPosition = vec4(0,0,-5);
+var lightPosition = vec4(90.0, 550.0, -4.0,1);
 
 // Vertex Buffer // Color Buffer // Normals Buffer
 var vBuffer;
