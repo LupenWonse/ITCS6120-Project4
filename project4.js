@@ -198,6 +198,8 @@ function generateRoomsFromData(){
         floor = data.rooms[room].floor;
         polygon(data.rooms[room].polygon, floor);
     }
+    
+    stairs(10,10,2,2);
 }
 
 
@@ -269,6 +271,77 @@ function polygon(vertices,floor){
              triangle(d,e,f);             
          }
      }
+}
+
+function extrudedPolygon(vertices, ground, ceiling){
+    // This function generates an extured polygon object
+    // Polygon is provided as an array of vertices
+    
+    var polygonVertices = [], elevatedVertices = [], floorVertices = [];
+    for (var i = 0 ; i < vertices.length; i++){
+        // If this vertex is a door vertex
+            polygonVertices.push(vec4(vertices[i][0],vertices[i][1],-ground));
+            elevatedVertices.push(vec4(vertices[i][0],vertices[i][1],-ceiling)); 
+        
+        // Generate suitable 
+        floorVertices.push(vertices[i][0]);
+        floorVertices.push(vertices[i][1]);
+        
+    }
+    
+    // Triangulate the floor
+    var floorTriangles = PolyK.Triangulate(floorVertices);
+    
+    // Set wall color
+    currentColor = wallColor;
+    // Draw Walls
+    for (var i = 0 ; i < vertices.length; i++){
+        if (i == vertices.length - 1) {
+            next = 0
+        } else {
+            next = i+1;
+        }
+        
+        var a = polygonVertices[i].slice(0);
+        var b = elevatedVertices[i].slice(0);
+        var c = elevatedVertices[next].slice(0);
+        var d = polygonVertices[next].slice(0);
+        
+        triangle(a,b,d);
+        triangle(d,b,c);
+    }   
+    
+    // Draw floors and ceilings
+    
+     for (var i = 0 ; i < floorTriangles.length; i = i + 3){
+         
+         // Floor
+         if (showFloors) {
+             currentColor = floorColor;
+            var a = polygonVertices[floorTriangles[i]];
+            var b = polygonVertices[floorTriangles[i+1]];
+            var c = polygonVertices[floorTriangles[i+2]];
+            triangle(a,b,c); 
+         }
+         
+         if (showCeilings) {
+             currentColor = ceilingColor;
+             var d = elevatedVertices[floorTriangles[i]];
+             var e = elevatedVertices[floorTriangles[i+1]];
+             var f = elevatedVertices[floorTriangles[i+2]];
+             triangle(d,f,e);             
+         }
+     }
+}
+
+function stairs(width, length, height, steps){
+    stepLength = length / steps;
+    stepHeight = height / steps;
+    
+    for (i=0;i<steps;i++){
+        console.log("Step: Width: " + width);
+        extrudedPolygon([[0,0],[width,0],[width,length - (i * stepLength)],[0,length - (i * stepLength) ]],stepHeight * i,stepHeight * (i + 1));                 
+    }
 }
 
 function triangle(a, b, c) {
