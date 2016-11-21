@@ -16,8 +16,8 @@ var currentColor = [];
 var reflectAmbient = [0.5,0.5,0.5,1];
 var reflectDiffuse = [0.3,0.3,0.3,1];
 var wallColor = [1,0.55,0,1];
-var floorColor = [0.9,0.9,0.9,1];
-var ceilingColor = [0.9,0.9,0.9,1];
+var floorColor = [1.0,0.5,0.5,1];
+var ceilingColor = [255/255,247/255,225/255,1];
 
 // Light properties
 var lightPosition = vec4(90.0, 550.0, -4.0,1);
@@ -40,6 +40,8 @@ var pTop = 3;
 var pBottom = -1;
 
 // ModelView Transformation variables
+// Current instant transformaion
+var instanceTransform = mat4(1);
 
 var lookAlpha = 0/180*Math.PI;
 var lookBeta = 90/180*Math.PI; ;
@@ -199,7 +201,18 @@ function generateRoomsFromData(){
         polygon(data.rooms[room].polygon, floor);
     }
     
-    stairs(10,10,2,2);
+
+    
+    // Rotate and move the stairs to its position
+    r = rotate(90,[0,0,1]);
+    t = translate(112,372,0);
+    //instanceTransform = t;
+    instanceTransform = math.multiply(t,r);
+    console.log(instanceTransform);
+    // Create stairs instance
+    stairs(16,48,12,12);
+    
+    instanceTransform = mat4(1);
 }
 
 
@@ -243,8 +256,8 @@ function polygon(vertices,floor){
         
         // Door CASE
         if ( vertices[i].length == 3 ){
-            a[2] = -8 * floor;
-            d[2] = -8 * floor;
+            a[2] = -8 + ((floor -1) * -12);
+            d[2] = -8 + ((floor -1) * -12);
         }
         triangle(a,d,b);
         triangle(d,c,b);
@@ -352,13 +365,13 @@ function triangle(a, b, c) {
     
     // Remove any calls with colinear points
     if(length(normal) != 0){
-        points.push(a);
-        points.push(b);
-        points.push(c);
+        points.push(math.multiply(instanceTransform, a));
+        points.push(math.multiply(instanceTransform, b));
+        points.push(math.multiply(instanceTransform, c));
 
-        normals.push(normal);
-        normals.push(normal);
-        normals.push(normal);
+        normals.push(math.multiply(instanceTransform, normal));
+        normals.push(math.multiply(instanceTransform, normal));
+        normals.push(math.multiply(instanceTransform, normal));
 
         colors.push(currentColor);
         colors.push(currentColor);
@@ -463,10 +476,37 @@ function uiChanged(object){
             break;
         case "colorCeiling":
             ceilingColor = vec4(object.rgb[0]/255, object.rgb[1]/255, object.rgb[2]/255,1);
+            break;
         } 
     }
     generateRoomsFromData();
     updateModel();
+}
+
+function goTo(location){
+console.log(goTo);
+    switch (location){
+        case "west":
+            eye = vec3(23,373,-6);
+            lookAlpha = 0;
+            lookBeta = radians(90);
+            look();
+            break;
+        case "class":
+            eye = vec3(36,232,-6);
+            lookAlpha = 0;
+            lookBeta = radians(90);
+            look();
+            break;
+        case "northWest":
+            break;
+        case "west2":
+            eye = vec3(23,373,-18);
+            lookAlpha = 0;
+            lookBeta = radians(90);
+            look();
+            break;
+    }
 }
 
 

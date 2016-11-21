@@ -7,6 +7,7 @@
 <!--Load External triangulation library-->
 <script type="text/javascript" src="PolyK.js"></script>
 <script src="Libraries/jscolor.js"></script>
+<script src="Libraries/Math.js"></script>
 
 <script type="text/javascript" src="plan.json"></script>
 
@@ -72,21 +73,31 @@ void main()
 
 <html>
     <body>
+
         <center>
             <h2>ITCS 6120 - Project4 a</h2>
                 <a href="about.html">About</a>
             <p>Ahmet Gencoglu - 800982227</p>
             <p>Use the wsad keys to move and arrow keys to look around!</p>
-            <canvas id="gl-canvas" width="800" height="600">
-                Oops ... your browser doesn't support the HTML5 canvas element
-            </canvas>
-            <br/>
-            Wall Color:<input id="colorWall" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" >
-            Floor Color:<input id="colorFloor" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" >
+                <div style="float:left" name="Left Menu">
+                    <h3> Jump to Location:</h3>
+                    <button onclick="goTo('west')">West Enterance</button><br>
+                    <button onclick="goTo('class')">Classroom</button><br>
+                    <button onclick="goTo('west2')">West Enterance Second Floor (In Progress)</button><br> 
+                </div>
+                <div style="float:right" name="Right Menu">
+                    <br/>
+            Wall Color:<input id="colorWall" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" ><br>
+            Floor Color:<input id="colorFloor" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" ><br>
             Ceiling Color:<input id="colorCeiling" class="jscolor {onFineChange:'uiChanged(this);'}" value="ffcc00" ><br>            
             <input type="checkbox" checked onchange="uiChanged()" id="checkboxCeiling">Ceilings <br>
             Number of rooms generated: <span id="numberOfRooms"></span><br>
             Number of triangles generated: <span id="numberOfTriangles"></span>
+                </div>
+            <canvas id="gl-canvas" width="800" height="600">
+                Oops ... your browser doesn't support the HTML5 canvas element
+            </canvas>
+            
         </center>
 </body>
 </html>
